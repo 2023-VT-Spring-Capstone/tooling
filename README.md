@@ -14,7 +14,7 @@ docker ps
 ```
 stop the containers
 ```
-docker-com pose down
+docker-compose down
 ```
 
 Use interaction mode with bash shell
@@ -32,7 +32,7 @@ in /bin all the executable scripts are stored here.
 kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 --partition 1 --topic TOPIC_NAME_1
 kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 --partition 1 --topic TOPIC_NAME_2
 ```
-refer to environmane: KAFKA_ZOOKEEPER_CONNECT
+refer to environment: KAFKA_ZOOKEEPER_CONNECT
 
 ### list all the topics under the same kafka
 ```
