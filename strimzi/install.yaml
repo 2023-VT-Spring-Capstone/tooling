@@ -1,0 +1,43 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: mykafka # 集群名称
+  namespace: kafka # 增加一行命名空间
+spec:
+  kafka:
+    version: 3.2.0
+    replicas: 3 # kafka节点数
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    config: # 根据情况修改
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 1
+      default.replication.factor: 3
+      min.insync.replicas: 1
+      inter.broker.protocol.version: "3.2"
+    storage:
+      type: jbod
+      volumes:
+      - id: 0
+        type: persistent-claim
+        class: local-path # 使用local-path这个storageclass
+        size: 100Gi
+        deleteClaim: false
+  zookeeper:
+    replicas: 3 # zk节点数
+    storage:
+      type: persistent-claim
+      class: local-path # 使用local-path这个storageclass
+      size: 100Gi
+      deleteClaim: false
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
