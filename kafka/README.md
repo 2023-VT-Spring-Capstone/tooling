@@ -2,6 +2,7 @@
 kafka needs the java runtime to run. Here we install the Kafka using a simple docker file.
 
 
+
 ## copy server.properties to host
 ```
 docker cp kafka-1:/etc/kafka/server.properties ./config/kafka-1/server.properties
@@ -19,7 +20,7 @@ therefore, /config is for changing the config in containers. /data is for saving
 
 ## Create a topic
 ```
-/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper-1:2181 --replication-factor 1 --partitions 3 --topic TOPIC_NAME
+/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper-1:2181 --replication-factor 1 --partitions 3 --topic ODS_BASE_LOG
 
 ## during deployment, choose multiple brokers (some machine may fail)
 /kafka/bin/kafka-topics.sh --create --bootstrap-server zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181  --replication-factor 1 --partitions 3 --topic TOPIC_NAME
@@ -32,26 +33,38 @@ therefore, /config is for changing the config in containers. /data is for saving
 
 ## Describe a topic
 ```
-/kafka/bin/kafka-topics.sh --zookeeper zookeeper-1:2181 --describe --topic TOPIC_NAME
+/kafka/bin/kafka-topics.sh --zookeeper zookeeper-1:2181 --describe --topic ODS_BASE_LOG
 ```
 
 ## Delete topic
 ```
-/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic TOPIC_NAME
+/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic ODS_BASE_LOG
 ```
 
 ## Consumer
 ```
-/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic TOPIC_NAME --from-beginning
+/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic ODS_BASE_LOG --from-beginning
 ```
 after the command above the terminal is listening
 
 ## Producer
 ```
 docker exec -it kafka-producer bash 
-echo "New Message: 1" | /kafka/bin/kafka-console-producer.sh --broker-list kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic TOPIC_NAME > /dev/null
-echo "New Message: 2" | /kafka/bin/kafka-console-producer.sh --broker-list kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic TOPIC_NAME > /dev/null
-echo "New Message: 3" | /kafka/bin/kafka-console-producer.sh --broker-list kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic TOPIC_NAME > /dev/null
-...
+echo "New Message: 1" | /kafka/bin/kafka-console-producer.sh --broker-list kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic ODS_BASE_LOG > /dev/null
+
+/kafka/bin/log.sh 2023-02-19 | /kafka/bin/kafka-console-producer.sh --broker-list kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic ODS_BASE_LOG > /dev/null
 ```
 
+
+## Connections
+LISTENERS are what interfaces Kafka binds to. ADVERTISED_LISTENERS are how clients can connect.
+
+```
+apt-get update
+apt-get install net-tools
+netstat -an
+```
+
+
+## Reference:
+https://stackoverflow.com/questions/51630260/connect-to-kafka-running-in-docker
