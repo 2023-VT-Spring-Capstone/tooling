@@ -10,7 +10,8 @@ Now you have:
 1 container for kafdrop to minotor the brokers
 
 ### Now use http://localhost:9000/ to monitor all brokers and topics
-![](2023-02-22-20-00-55.png)
+![image](https://user-images.githubusercontent.com/14934562/220826742-146f47a3-fc4b-4201-97cc-5ada930be912.png)
+
 
 ### To use the data generating script, exec container with root permission
 ```
@@ -19,9 +20,9 @@ whoami //root
 ```
 
 
-### Create a topic (name = ODS_BASE_LOG)
+### Create a topic (topic name = ODS_BASE_LOG, --partitions = 3 ~ 6)
 ```
-kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 1 --topic ODS_BASE_LOG
+kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 4 --topic ODS_BASE_LOG
 ```
 ### List all topics
 ```
@@ -38,7 +39,7 @@ kafka-topics --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --desc
 kafka-topics --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --delete --topic ODS_BASE_LOG
 ```
 
-# Now we can start playing with the consumer/producer
+# Now we can start using the consumer/producer
 
 ### Consumer
 
@@ -52,11 +53,11 @@ kafka-console-consumer --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29
 1. create input by yourself
 ```
 kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG
-> hi this is a testing message
+> hi this is a testing message //consumer console should show the same message
 ```
 2. produce with the script
 ```
-method 1: recommend
+method 1(recommended):
 ./mock_data/log.sh TODAYS_DATE | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
 
 method 2:
