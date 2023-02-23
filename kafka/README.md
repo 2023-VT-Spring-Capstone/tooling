@@ -1,70 +1,64 @@
-# Kafka with docker compose (for local development/testing)
-kafka needs the java runtime to run. Here we install the Kafka using a simple docker file.
+# How to use this repo
+1. download docker-compose.ymal and the mock_data folder
+2. docker compose up -d
+Now you have:
+1 container for Zookeeper, 
+3 containers for kafka brokers, 
+    - kafka-1 on port 29092 between containers, localhost:9092 on host machine (use this as a producer to generate mock data)
+    - kafka-2 on port 29093 between containers, localhost:9093 on host machine
+    - kafka-3 on port 29094 between containers, localhost:9094 on host machine
+1 container for kafdrop to minotor the brokers
 
+### Now use http://localhost:9000/ to monitor all brokers and topics
+![](2023-02-22-20-00-55.png)
 
-
-## copy server.properties to host
+### To use the data generating script, exec container with root permission
 ```
-docker cp kafka-1:/etc/kafka/server.properties ./config/kafka-1/server.properties
-docker cp kafka-2:/etc/kafka/server.properties ./config/kafka-2/server.properties
-docker cp kafka-3:/etc/kafka/server.properties ./config/kafka-3/server.properties
-```
-
-## We want to keep the container as small as possible
-1. we can install vi/vim in the container and modify the properties
-2. mount files into container. Use set volumes in docker-compose.yaml
-therefore, /config is for changing the config in containers. /data is for saving data at Host machine.
-
-
-
-
-## Create a topic
-```
-/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper-1:2181 --replication-factor 1 --partitions 3 --topic ODS_BASE_LOG
-
-## during deployment, choose multiple brokers (some machine may fail)
-/kafka/bin/kafka-topics.sh --create --bootstrap-server zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181  --replication-factor 1 --partitions 3 --topic TOPIC_NAME
-```
-
-## List all topics
-```
-/kafka/bin/kafka-topics.sh --zookeeper zookeeper-1:2181 --list
-```
-
-## Describe a topic
-```
-/kafka/bin/kafka-topics.sh --zookeeper zookeeper-1:2181 --describe --topic ODS_BASE_LOG
-```
-
-## Delete topic
-```
-/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic ODS_BASE_LOG
-```
-
-## Consumer
-```
-/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic ODS_BASE_LOG --from-beginning
-```
-after the command above the terminal is listening
-
-## Producer
-```
-docker exec -it kafka-producer bash 
-echo "New Message: 1" | /kafka/bin/kafka-console-producer.sh --broker-list kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic ODS_BASE_LOG > /dev/null
-
-/kafka/bin/log.sh 2023-02-19 | /kafka/bin/kafka-console-producer.sh --broker-list kafka-1:9092,kafka-2:9092,kafka-3:9092 --topic ODS_BASE_LOG > /dev/null
+docker exec -it -u root kafka-1 bash
+whoami //root
 ```
 
 
-## Connections
-LISTENERS are what interfaces Kafka binds to. ADVERTISED_LISTENERS are how clients can connect.
-
+### Create a topic (name = ODS_BASE_LOG)
 ```
-apt-get update
-apt-get install net-tools
-netstat -an
+kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 1 --topic ODS_BASE_LOG
+```
+### List all topics
+```
+kafka-topics --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --list
 ```
 
+### Describe a topic
+```
+kafka-topics --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --describe --topic ODS_BASE_LOG
+```
 
-## Reference:
-https://stackoverflow.com/questions/51630260/connect-to-kafka-running-in-docker
+### Delete topic
+```
+kafka-topics --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --delete --topic ODS_BASE_LOG
+```
+
+# Now we can start playing with the consumer/producer
+
+### Consumer
+
+make a consle consumer listen to the comming data
+```
+kafka-console-consumer --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --from-beginning --topic ODS_BASE_LOG
+```
+
+### Producer
+
+1. create input by yourself
+```
+kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG
+> hi this is a testing message
+```
+2. produce with the script
+```
+method 1: recommend
+./mock_data/log.sh TODAYS_DATE | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
+
+method 2:
+java -jar /mock_data/gmall2020-mock-log-2021-11-29.jar | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
+```
