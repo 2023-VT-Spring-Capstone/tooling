@@ -61,5 +61,5 @@ method 1(recommended):
 ./mock_data/log.sh TODAYS_DATE | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
 
 method 2:
-java -jar /mock_data/gmall2020-mock-log-2021-11-29.jar | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
+java -jar mock_data/gmall2020-mock-log-2021-11-29.jar | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
 ```
