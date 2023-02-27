@@ -2,12 +2,18 @@
 1. download docker-compose.ymal and the mock_data folder
 2. docker compose up -d
 Now you have:
-1 container for Zookeeper, 
-3 containers for kafka brokers, 
+
+| container  | quantity |port|
+| ------------- | ------------- |---|
+|Zookeeper|1|2181|
+|kafka|3|9092, 9093, 9094|
+|kafdrop|1|9000|
+|redis|1|6379|
+
     - kafka-1 on port 29092 between containers, localhost:9092 on host machine (use this as a producer to generate mock data)
     - kafka-2 on port 29093 between containers, localhost:9093 on host machine
     - kafka-3 on port 29094 between containers, localhost:9094 on host machine
-1 container for kafdrop to minotor the brokers
+
 
 ### Now use http://localhost:9000/ to monitor all brokers and topics
 ![image](https://user-images.githubusercontent.com/14934562/220826742-146f47a3-fc4b-4201-97cc-5ada930be912.png)
