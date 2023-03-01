@@ -10,14 +10,14 @@ All three items should be in the same directory at the same level.
 
 ### Type 'docker compose up -d' in the command line.
 
-Now you have:
+Now you have: <br>
 1 container for MySQL, <br>
 1 container for Maxwell, <br>
 1 container for Zookeeper, <br>
 3 containers for kafka brokers, <br>
-    - kafka-1 on port 29092 between containers, localhost:9092 on host machine <br>
-    - kafka-2 on port 29093 between containers, localhost:9093 on host machine <br>
-    - kafka-3 on port 29094 between containers, localhost:9094 on host machine <br>
+&nbsp;- kafka-1 on port 29092 between containers, localhost:9092 on host machine <br>
+&nbsp;- kafka-2 on port 29093 between containers, localhost:9093 on host machine <br>
+&nbsp;- kafka-3 on port 29094 between containers, localhost:9094 on host machine <br>
 1 container for kafdrop to minotor the brokers <br>
 
 # Test Guide
