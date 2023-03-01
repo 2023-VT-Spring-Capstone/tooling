@@ -1,5 +1,5 @@
 # Included Items
-1. a docker-compose.yml to build containers for MySQL, Maxwell, Kafka, and other services.
+1. A docker-compose.yml to build containers for MySQL, Maxwell, Kafka, and other services.
 2. A mysql_init folder includes the SQL file required to initialize the MySQL database.
 3. A config folder contains the files necessary to configure the settings of both MySQL and Maxwell.
 
@@ -15,9 +15,9 @@ Now you have: <br>
 1 container for Maxwell, <br>
 1 container for Zookeeper, <br>
 3 containers for kafka brokers, <br>
-&nbsp;- kafka-1 on port 29092 between containers, localhost:9092 on host machine <br>
-&nbsp;- kafka-2 on port 29093 between containers, localhost:9093 on host machine <br>
-&nbsp;- kafka-3 on port 29094 between containers, localhost:9094 on host machine <br>
+&nbsp;&nbsp;&nbsp;&nbsp;- kafka-1 on port 29092 between containers, localhost:9092 on host machine <br>
+&nbsp;&nbsp;&nbsp;&nbsp;- kafka-2 on port 29093 between containers, localhost:9093 on host machine <br>
+&nbsp;&nbsp;&nbsp;&nbsp;- kafka-3 on port 29094 between containers, localhost:9094 on host machine <br>
 1 container for kafdrop to minotor the brokers <br>
 
 # Test Guide
