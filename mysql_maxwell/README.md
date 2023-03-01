@@ -1,65 +1,41 @@
-# How to use this repo
-1. download docker-compose.ymal and the mock_data folder
-2. docker compose up -d
+# Included Items
+1. a docker-compose.yml to build containers for MySQL, Maxwell, Kafka, and other services.
+2. A mysql_init folder includes the SQL file required to initialize the MySQL database.
+3. A config folder contains the files necessary to configure the settings of both MySQL and Maxwell.
+
+# Setup
+### To start with, download the docker-compose.yml file, along with two folders named mysql_init and config. 
+All three items should be in the same directory at the same level.
+
+### Type the following command in the command line: 'docker compose up -d'.
 Now you have:
+1 container for MySQL
+1 container for Maxwell
 1 container for Zookeeper, 
 3 containers for kafka brokers, 
-    - kafka-1 on port 29092 between containers, localhost:9092 on host machine (use this as a producer to generate mock data)
+    - kafka-1 on port 29092 between containers, localhost:9092 on host machine 
     - kafka-2 on port 29093 between containers, localhost:9093 on host machine
     - kafka-3 on port 29094 between containers, localhost:9094 on host machine
 1 container for kafdrop to minotor the brokers
 
-### Now use http://localhost:9000/ to monitor all brokers and topics
-![image](https://user-images.githubusercontent.com/14934562/220826742-146f47a3-fc4b-4201-97cc-5ada930be912.png)
+# Test Guide
+The Maxwell service is set up to connect to the 'ODS_BASE_LOG' topic, as specified in the 'maxwell.config.properties' configuration file located in the 'config' folder. To proceed, it's necessary to create a matching topic in Kafka.
 
-
-### To use the data generating script, exec container with root permission
-```
-docker exec -it -u root kafka-1 bash
-whoami //root
-```
-
-
-### Create a topic (topic name = ODS_BASE_LOG, --partitions = 3 ~ 6)
+### Create a topic named "ODS_BASE_LOG" (--partitions = 3 ~ 6)
 ```
 kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 4 --topic ODS_BASE_LOG
 ```
-### List all topics
-```
-kafka-topics --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --list
-```
 
-### Describe a topic
-```
-kafka-topics --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --describe --topic ODS_BASE_LOG
-```
-
-### Delete topic
-```
-kafka-topics --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --delete --topic ODS_BASE_LOG
-```
-
-# Now we can start using the consumer/producer
-
-### Consumer
-
-make a consle consumer listen to the comming data
+### Set up a console consumer to listen to the incoming data from Maxwell.
 ```
 kafka-console-consumer --bootstrap-server kafka-1:29092,kafka-2:29093,kafka-3:29094 --from-beginning --topic ODS_BASE_LOG
 ```
 
-### Producer
+After creating the 'activity_info' table during the MySQL initialization process, we can test whether the data is successfully transmitted from MySQL to Kafka by inserting a row into the table.
 
-1. create input by yourself
+### Insert a row in the 'activity_info' table
 ```
-kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG
-> hi this is a testing message //consumer console should show the same message
+INSERT INTO activity_info VALUES (1, 'black friday deals', '1001', 'discount', '2022-11-25 00:00:00', '2022-11-28 00:00:00', NULL);
 ```
-2. produce with the script
-```
-method 1(recommended):
-./mock_data/log.sh TODAYS_DATE | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
 
-method 2:
-java -jar mock_data/gmall2020-mock-log-2021-11-29.jar | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
-```
+Last, Verify that the console is printing out the consumed data. Good luck!
