@@ -49,7 +49,7 @@ INSERT INTO activity_info VALUES (1, 'black friday deals', '1001', 'discount', '
 
 ### Verify that the console is printing out the consumed data
 
-#Additional Instructions
+# Additional Instructions
 
 In the event that the maxwell container shuts down, follow the steps below to restart and rebuild the connection with MySQL and Kafka.
 
