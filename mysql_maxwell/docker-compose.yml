@@ -93,6 +93,7 @@ services:
   mysql:
     image: mysql:5.7.34
     platform: linux/amd64
+    container_name: mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -113,6 +114,7 @@ services:
   maxwell:
     image: zendesk/maxwell:v1.29.2
     platform: linux/amd64
+    container_name: maxwell
     restart: always
     depends_on:
       - mysql
