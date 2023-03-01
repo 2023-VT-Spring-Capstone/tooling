@@ -1,0 +1,138 @@
+version: "3.8"
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+    networks:
+      - kafka-network
+
+  kafka-1:
+    image: confluentinc/cp-kafka
+    container_name: kafka-1
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://:29092,EXTERNAL://:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    volumes:
+    - ./mock_data/log.sh:/home/appuser/mock_data/log.sh:rwx
+    - ./mock_data/gmall2020-mock-log-2021-11-29.jar:/home/appuser/mock_data/gmall2020-mock-log-2021-11-29.jar:rwx
+    - ./mock_data/application.yml:/home/appuser/mock_data/application.yml:rwx
+    - ./mock_data/logback.xml:/home/appuser/mock_data/logback.xml:rwx
+    - ./mock_data/path.json:/home/appuser/mock_data/path.json:rwx
+    networks:
+      - kafka-network
+
+  kafka-2:
+    image: confluentinc/cp-kafka
+    container_name: kafka-2
+    depends_on:
+      - zookeeper
+    ports:
+      - 9093:9093
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://:29093,EXTERNAL://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-2:29093,EXTERNAL://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    networks:
+      - kafka-network
+
+  kafka-3:
+    image: confluentinc/cp-kafka
+    container_name: kafka-3
+    depends_on:
+      - zookeeper
+    ports:
+      - 9094:9094
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://:29094,EXTERNAL://:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-3:29094,EXTERNAL://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    networks:
+      - kafka-network
+
+  kafdrop:
+    container_name: kafdrop
+    image: linuxforhealth/kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka-1:29092,kafka-2:29093,kafka-3:29094"
+      JVM_OPTS: "-Xms32M -Xmx64M -Xss180K"
+    networks:
+      - kafka-network
+  
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - kafka-network
+
+  mysql:
+    image: mysql:5.7.34
+    platform: linux/amd64
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gmall
+      MYSQL_USER: local
+      MYSQL_PASSWORD: local
+      TZ: "US/Eastern"
+    command: "--server-id=1"
+    volumes:
+      - ./mysql_init/:/docker-entrypoint-initdb.d/
+      - ./config/mysql.my.cnf:/etc/my.cnf
+    ports:
+      - "3307:3306" #本地可能會有MySQL，所以就映射到port 3307
+    networks:
+      - mysql-network
+
+
+  maxwell:
+    image: zendesk/maxwell:v1.29.2
+    platform: linux/amd64
+    container_name: maxwell
+    restart: always
+    depends_on:
+      - mysql
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    environment:
+      MAXWELL_HOST: mysql
+      TZ: "US/Eastern"
+    volumes:
+      - ./config/maxwell.config.properties:/app/config.properties
+    command: sh -c "exec /app/bin/maxwell --config /app/config.properties"
+    ports:
+      - "8080:8080"
+    networks:
+      - mysql-network
+      - kafka-network
+
+networks:
+  mysql-network:
+  kafka-network:
