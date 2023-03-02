@@ -28,7 +28,12 @@ whoami //root
 
 ### Create a topic (topic name = ODS_BASE_LOG, --partitions = 3 ~ 6)
 ```
-kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 4 --topic ODS_BASE_LOG
+kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 4 --topic ODS_BASE_LOG &&
+kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 4 --topic DWD_PAGE_LOG_TOPIC &&
+kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 4 --topic DWD_PAGE_DISPLAY_TOPIC &&
+kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 4 --topic DWD_PAGE_ACTION_TOPIC &&
+kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 4 --topic DWD_START_LOG_TOPIC &&
+kafka-topics --bootstrap-server kafka-1:29092 --create --if-not-exists --replication-factor 1 --partitions 4 --topic DWD_ERROR_LOG_TOPIC
 ```
 ### List all topics
 ```
@@ -63,9 +68,5 @@ kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 -
 ```
 2. produce with the script
 ```
-method 1(recommended):
 ./mock_data/log.sh TODAYS_DATE | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
-
-method 2:
-java -jar mock_data/gmall2020-mock-log-2021-11-29.jar | kafka-console-producer --broker-list kafka-1:29092,kafka-2:29093,kafka-3:29094 --topic ODS_BASE_LOG > /dev/null
 ```
