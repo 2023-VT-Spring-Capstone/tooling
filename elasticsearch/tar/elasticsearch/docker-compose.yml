@@ -1,0 +1,25 @@
+version: '3'
+services:
+  elasticsearch:
+    image: my_elasticsearch:7.8.0
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - elastic
+
+  kibana:
+    image: my_kibana:7.8.0
+    platform: linux/amd64
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge
