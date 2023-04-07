@@ -15,6 +15,7 @@ services:
   kafka-1:
     image: confluentinc/cp-kafka
     container_name: kafka-1
+    restart: always
     depends_on:
       - zookeeper
     ports:
@@ -38,6 +39,7 @@ services:
   kafka-2:
     image: confluentinc/cp-kafka
     container_name: kafka-2
+    restart: always
     depends_on:
       - zookeeper
     ports:
@@ -55,6 +57,7 @@ services:
   kafka-3:
     image: confluentinc/cp-kafka
     container_name: kafka-3
+    restart: always
     depends_on:
       - zookeeper
     ports:

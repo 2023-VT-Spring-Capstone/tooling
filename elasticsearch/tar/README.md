@@ -42,21 +42,24 @@ docker run -d --name kibana --network elastic  -p 5601:5601 my_kibana:7.8.0
 Create a container named 'kibana' using the 'my_kibana:7.8.0' image within the 'elastic' network.
 
 
+# Credentials
+
+### username: elastic
+### password: lIaOuoKHcJcM173Ei8U7
+
+
 # Test
 
 ## Step 1
-Request the password from the Elasticsearch password holder.
+Visit 'localhost:9200' from your local browser, you should see a login window. Use the username and password to test if you can log in. If successful, you should see a JSON response with a 'tagline' field that reads 'You Know, for Search'.
 
 ## Step 2
-Visit 'localhost:9200' from your local browser, you should see a login window. Use the username and password you received to test if you can log in. If successful, you should see a JSON response with a 'tagline' field that reads 'You Know, for Search'.
+Next, visit 'localhost:5601' to access Kibana, you should see a login window. Use the username and password to log in.
 
 ## Step 3
-Next, visit 'localhost:5601' to access Kibana, you should see a login window. Use the username and password you received to log in.
-
-## Step 4
 Click on the hamburger menu icon in the top left corner, then select 'Dev Tools' in the 'Management' section.
 
-## Step 5
+## Step 4
 ```
 GET project/_search
 ```
