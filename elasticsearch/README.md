@@ -2,14 +2,20 @@
 
 This 'elasticsearch' directory contains two subdirectories, namely 'compose' and 'tar'. You can ignore them if you are seeking our project's customized Elasticsearch and Kibana's images from Docker Hub.
 
-I will guide you on how to use Docker Pull to obtain customized Elasticsearch and Kibana images from Docker Hub to create configured containers. This is the most efficient way of acquiring images.
+I will guide you on how to Docker Pull from Docker Hub to obtain customized Elasticsearch and Kibana images and create configured containers. This is the most efficient way of acquiring images.
 
 The 'compose' directory will guide you on how to use Docker Compose to obtain official original images from Docker Hub to create containers for Elasticsearch and Kibana, followed by manual configuration steps.
 
 The 'tar' directory will guide you on how to use existing tar files to create containers for Elasticsearch and Kibana using the Docker Compose and Docker Run methods.
 
 # Setup
+## Method 1: Docker Compose (fastest)
+```
+docker compose up -d
+```
+To automatically pull the Elasticsearch and Kibana images from Docker Hub and create containers within the same Docker network named 'elastic', navigate to the directory containing the Docker compose file and run the command..
 
+## Method 2: Docker Run
 ### Step 1:
 ```
 docker pull laynelmoon/elasticsearch:7.8.0
@@ -84,6 +90,11 @@ docker pull <username>/<image-name>:<tag>
 ```
 This will pull the image from your docker hub to local docker.
 
+### Docker Tag (bonus)
+```
+docker tag <image_name> <repository>:<tag>
+```
+`<image_name>` is the name or id of your local image, `<repository>` is the name of the repository that you are going to push.
 
 ## Save as Tar File
 ### Docker Commit
