@@ -46,6 +46,29 @@ This will use the image 'laynelmoon/kibana:7.8.0' to create a container named 'e
 ### username: elastic
 ### password: lIaOuoKHcJcM173Ei8U7
 
+## To disable security check (Credentials check)
+### Step 1:
+```
+docker exec -it elasticsearch bash
+```
+Start an interactive bash shell session inside the elasticsearch container.
+
+### Step 2:
+```
+vi config/elasticsearch.yml
+.
+.
+xpack.security.enabled: false
+```
+Edit the elasticsearch.yml file and set 'xpack.security.enabled' to 'false'.
+
+### Step 3:
+```
+exit
+docker restart elasticsearch
+```
+Exit from the bash.
+Restart the elasticsearch container.
 
 # Test
 ## Step 1
