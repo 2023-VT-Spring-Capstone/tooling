@@ -1,3 +1,6 @@
+# Introduction
+This directory will guide you on how to use existing tar files to create containers for Elasticsearch and Kibana using the Docker Compose and Docker Run methods.
+
 # Included Items
 A docker-compose.yml inside 'elasticsearch' directory that is used to create containers for Elasticsearch and Kibana using existing images.
 

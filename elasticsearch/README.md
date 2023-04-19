@@ -4,10 +4,6 @@ This 'elasticsearch' directory contains two subdirectories, namely 'compose' and
 
 I will guide you on how to Docker Pull from Docker Hub to obtain customized Elasticsearch and Kibana images and create configured containers. This is the most efficient way of acquiring images.
 
-The 'compose' directory will guide you on how to use Docker Compose to obtain official original images from Docker Hub to create containers for Elasticsearch and Kibana, followed by manual configuration steps.
-
-The 'tar' directory will guide you on how to use existing tar files to create containers for Elasticsearch and Kibana using the Docker Compose and Docker Run methods.
-
 # Setup
 ## Method 1: Docker Compose (fastest)
 ```
@@ -46,6 +42,29 @@ This will use the image 'laynelmoon/kibana:7.8.0' to create a container named 'e
 ### username: elastic
 ### password: lIaOuoKHcJcM173Ei8U7
 
+## To disable security check (Credentials check)
+### Step 1:
+```
+docker exec -it elasticsearch bash
+```
+Start an interactive bash shell session inside the elasticsearch container.
+
+### Step 2:
+```
+vi config/elasticsearch.yml
+.
+.
+xpack.security.enabled: false
+```
+Edit the elasticsearch.yml file and set 'xpack.security.enabled' to 'false'.
+
+### Step 3:
+```
+exit
+docker restart elasticsearch
+```
+Exit from the bash.
+Restart the elasticsearch container.
 
 # Test
 ## Step 1

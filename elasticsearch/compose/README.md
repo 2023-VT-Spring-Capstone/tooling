@@ -1,3 +1,6 @@
+# Introduction
+The 'compose' directory will guide you on how to use Docker Compose to obtain official original images from Docker Hub to create containers for Elasticsearch and Kibana, followed by manual configuration steps.
+
 # Included Items
 Inside 'elasticsearch' directory, you have
 1. A docker-compose.yml to create containers for Elasticsearch and Kibana.

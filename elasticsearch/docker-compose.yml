@@ -2,6 +2,7 @@ version: '3'
 services:
   elasticsearch:
     image: laynelmoon/elasticsearch:7.8.0
+    restart: unless-stopped
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
@@ -24,4 +25,4 @@ services:
 
 networks:
   elastic:
-    driver: bridge
+    name: elastic
