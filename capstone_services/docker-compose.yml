@@ -1,0 +1,164 @@
+version: "3.8"
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    container_name: zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+    networks:
+      - kafka
+
+  kafka-1:
+    image: confluentinc/cp-kafka
+    container_name: kafka-1
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://:29092,EXTERNAL://:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    volumes:
+    - ./mock_data/log.sh:/home/appuser/mock_data/log.sh:rwx
+    - ./mock_data/gmall2020-mock-log-2021-11-29.jar:/home/appuser/mock_data/gmall2020-mock-log-2021-11-29.jar:rwx
+    - ./mock_data/application.yml:/home/appuser/mock_data/application.yml:rwx
+    - ./mock_data/logback.xml:/home/appuser/mock_data/logback.xml:rwx
+    - ./mock_data/path.json:/home/appuser/mock_data/path.json:rwx
+    networks:
+      - kafka
+
+  kafka-2:
+    image: confluentinc/cp-kafka
+    container_name: kafka-2
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - 9093:9093
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://:29093,EXTERNAL://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-2:29093,EXTERNAL://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    networks:
+      - kafka
+
+  kafka-3:
+    image: confluentinc/cp-kafka
+    container_name: kafka-3
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - 9094:9094
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://:29094,EXTERNAL://:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-3:29094,EXTERNAL://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    networks:
+      - kafka
+
+  kafdrop:
+    container_name: kafdrop
+    image: linuxforhealth/kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka-1:29092,kafka-2:29093,kafka-3:29094"
+      JVM_OPTS: "-Xms32M -Xmx64M -Xss180K"
+    networks:
+      - kafka
+  
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - kafka
+
+  mysql:
+    image: mysql:5.7.34
+    platform: linux/amd64
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      TZ: "US/Eastern"
+    command: "--server-id=1"
+    volumes:
+      - ./mysql_init/:/docker-entrypoint-initdb.d/
+      - ./config/mysql.my.cnf:/etc/my.cnf
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - mysql
+
+  maxwell:
+    image: zendesk/maxwell:v1.29.2
+    platform: linux/amd64
+    container_name: maxwell
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    environment:
+      MAXWELL_HOST: mysql
+      TZ: "US/Eastern"
+    volumes:
+      - ./config/maxwell.config.properties:/app/config.properties
+    command: sh -c "exec /app/bin/maxwell --config /app/config.properties"
+    ports:
+      - "8080:8080"
+    networks:
+      - mysql
+      - kafka
+
+  yfinance-data-scraper:
+    container_name: yfinance-data-scraper
+    image: laynelmoon/yfinance-data-scraper:v1.0
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - mysql
+
+  realtime-backend:
+    image: laynelmoon/realtime-backend:2.0
+    container_name: realtime-backend
+    restart: unless-stopped
+    platform: linux/amd64
+    ports:
+      - "80:80"
+    networks:
+      - mysql
+      - elastic
+
+networks:
+  kafka:
+    name: kafka
+  mysql:
+    name: mysql
+  elastic:
+    name: elastic

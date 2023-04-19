@@ -1,0 +1,15 @@
+version: '3'
+services:
+
+  yfinance-data-scraper:
+    container_name: yfinance-data-scraper
+    image: laynelmoon/yfinance-data-scraper:v1.0
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - mysql
+
+networks:
+  mysql:
+    name: mysql

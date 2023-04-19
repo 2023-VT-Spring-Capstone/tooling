@@ -1,0 +1,9 @@
+CREATE USER 'maxwell'@'%' IDENTIFIED BY 'maxwell';
+GRANT SELECT, REPLICATION CLIENT, REPLICATION SLAVE ON *.* TO 'maxwell'@'%';
+CREATE DATABASE maxwell;
+GRANT ALL ON maxwell.* TO 'maxwell'@'%';
+
+CREATE USER 'appuser'@'%' IDENTIFIED BY 'appuser';
+CREATE DATABASE IF NOT EXISTS yfinance;
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE ON yfinance.* TO 'appuser'@'%';
+FLUSH PRIVILEGES;
