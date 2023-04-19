@@ -4,10 +4,6 @@ This 'elasticsearch' directory contains two subdirectories, namely 'compose' and
 
 I will guide you on how to Docker Pull from Docker Hub to obtain customized Elasticsearch and Kibana images and create configured containers. This is the most efficient way of acquiring images.
 
-The 'compose' directory will guide you on how to use Docker Compose to obtain official original images from Docker Hub to create containers for Elasticsearch and Kibana, followed by manual configuration steps.
-
-The 'tar' directory will guide you on how to use existing tar files to create containers for Elasticsearch and Kibana using the Docker Compose and Docker Run methods.
-
 # Setup
 ## Method 1: Docker Compose (fastest)
 ```
