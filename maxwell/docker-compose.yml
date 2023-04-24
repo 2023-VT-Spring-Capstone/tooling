@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+
+  maxwell:
+    image: zendesk/maxwell:v1.29.2
+    platform: linux/amd64
+    container_name: maxwell
+    restart: unless-stopped
+    environment:
+      MAXWELL_HOST: mysql
+      TZ: "US/Eastern"
+    volumes:
+      - ./config/maxwell.config.properties:/app/config.properties
+    command: sh -c "exec /app/bin/maxwell --config /app/config.properties"
+    ports:
+      - "8080:8080"
+    networks:
+      - mysql
+      - kafka
+
+networks:
+  mysql:
+    name: mysql
+  kafka:
+    name: kafka

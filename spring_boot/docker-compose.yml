@@ -1,0 +1,19 @@
+version: '3'
+services:
+
+  realtime-backend:
+    image: laynelmoon/realtime-backend:2.0
+    container_name: realtime-backend
+    restart: unless-stopped
+    platform: linux/amd64
+    ports:
+      - "80:80"
+    networks:
+      - mysql
+      - elastic
+
+networks:
+  mysql:
+    name: mysql
+  elastic:
+    name: elastic
