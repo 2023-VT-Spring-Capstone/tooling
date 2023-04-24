@@ -69,7 +69,11 @@ INSERT INTO ticker (name) VALUES
 ('AMD'),
 ('BMY'),
 ('WFC'),
-('MS');
+('MS'),
+('BBBY'),
+('AMC'),
+('GME'),
+('BB');
 
 CREATE TABLE IF NOT EXISTS info (
   symbol VARCHAR(10) NOT NULL UNIQUE,
